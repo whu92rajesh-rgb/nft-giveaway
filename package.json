@@ -1,0 +1,12 @@
+{
+  "name": "nft-giveaway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Netlify Functions for ERC-1155 transfer with debug logging",
+  "main": "index.js",
+  "license": "MIT",
+  "engines": { "node": ">=16" },
+  "dependencies": {
+    "ethers": "5.7.2"
+  }
+}
