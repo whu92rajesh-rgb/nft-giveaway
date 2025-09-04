@@ -57,13 +57,13 @@ exports.handler = async (event) => {
       });
     }
 
-    // Gas price + admin POL balance (for diagnostics)
-    const gasPrice = await provider.getGasPrice().catch(() => null);
+    // Gas price + admin POL balance (diagnostics)
+    const feeData  = await provider.getFeeData().catch(() => ({}));
     const adminPOL = await provider.getBalance(adminAddr).catch(() => null);
 
     // Signer check
-    const signer      = new ethers.Wallet(PRIVATE_KEY, provider);
-    const signerAddr  = await signer.getAddress();
+    const signer     = new ethers.Wallet(PRIVATE_KEY, provider);
+    const signerAddr = await signer.getAddress();
     if (signerAddr.toLowerCase() !== adminAddr.toLowerCase()) {
       return ok(400, { error: "Signer address ≠ ADMIN_ADDRESS", signerAddr, adminAddr });
     }
@@ -91,24 +91,55 @@ exports.handler = async (event) => {
       return ok(400, { error: "Transfer would revert", reason: e?.reason || e?.message });
     }
 
-    // --- Broadcast the tx and RETURN IMMEDIATELY (do NOT wait for confirmations)
-    const overrides = gasPrice ? { gasPrice, gasLimit: 200000 } : { gasLimit: 200000 };
-    const tx = await contract.safeTransferFrom(adminAddr, toAddr, tokenId, amount, "0x", overrides);
+    // --- EIP-1559 fee strategy (Polygon prefers type-2 txs)
+    // Set sane minimums; bump if provider suggests higher.
+    const minPriority = ethers.utils.parseUnits("40", "gwei"); // tip
+    const minMaxFee   = ethers.utils.parseUnits("80", "gwei"); // total cap
 
-    // Try a short mempool/propagation wait (12s) WITHOUT blocking your response
-    // We still return instantly below; this is just to mark 'propagated' truthy when possible.
+    const maxPriorityFeePerGas =
+      feeData.maxPriorityFeePerGas && feeData.maxPriorityFeePerGas.gt(minPriority)
+        ? feeData.maxPriorityFeePerGas
+        : minPriority;
+
+    const maxFeePerGas =
+      feeData.maxFeePerGas && feeData.maxFeePerGas.gt(minMaxFee)
+        ? feeData.maxFeePerGas
+        : minMaxFee;
+
+    const overrides = {
+      gasLimit: 200000,
+      maxPriorityFeePerGas,
+      maxFeePerGas
+      // If you ever need legacy fallback:
+      // gasPrice: ethers.utils.parseUnits("60", "gwei")
+    };
+
+    // --- Broadcast and return immediately (avoid Netlify timeouts)
+    const tx = await contract.safeTransferFrom(
+      adminAddr,
+      toAddr,
+      tokenId,
+      amount,
+      "0x",
+      overrides
+    );
+
+    // Optional short propagation check (~12s) – does NOT block the response
     let propagated = false;
-    provider.waitForTransaction(tx.hash, 1, 12000).then((r) => {
-      if (r) propagated = true;
-    }).catch(() => { /* ignore */ });
+    provider
+      .waitForTransaction(tx.hash, 1, 12000)
+      .then((r) => { if (r) propagated = true; })
+      .catch(() => { /* ignore */ });
 
-    // Respond fast to avoid Netlify function timeout
     return ok(200, {
       status: "submitted",
       message: "Transaction broadcast—track on Polygonscan or OKLink.",
       txHash: tx.hash,
       network: { chainId: network.chainId, name: network.name },
-      gasPrice: gasPrice ? gasPrice.toString() : null,
+      usedFees: {
+        maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
+        maxFeePerGas: maxFeePerGas.toString()
+      },
       adminPOL: adminPOL ? adminPOL.toString() : null,
       contract: contractAddr,
       tokenId: tokenId.toString(),
