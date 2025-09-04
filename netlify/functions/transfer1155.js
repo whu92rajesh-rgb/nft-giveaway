@@ -57,9 +57,20 @@ exports.handler = async (event) => {
     } catch (e) {
       return ok(400, { error: "Transfer would revert", reason: e?.reason || e?.message });
     }
+    
+const tx = await contract.safeTransferFrom(adminAddr, toAddr, tokenId, amount, "0x", { gasLimit: 200000 });
 
-    const tx = await contract.safeTransferFrom(adminAddr, toAddr, tokenId, amount, "0x", { gasLimit: 200000 });
-    const receipt = await tx.wait();
+// ✅ Return right away — do not wait for confirmations
+return ok(200, {
+  status: "submitted",
+  message: "Transaction broadcast—track it on Polygonscan/OKLink.",
+  txHash: tx.hash,
+  contract: contractAddr,
+  tokenId: tokenId.toString(),
+  amount: amount.toString()
+});
+
+
 
     const userBalAfter = await contract.balanceOf(toAddr, tokenId);
     const adminBalAfter = await contract.balanceOf(adminAddr, tokenId);
