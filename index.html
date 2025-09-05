@@ -1,197 +1,307 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PassTheBall | NFT Giveaway</title>
-  <meta name="description" content="Claim your PassTheBall ERC-1155 NFT on Polygon." />
+  <title>#PassTheBall – Spread the Joy</title>
 
-  <!-- Brand Colors (adjust here) -->
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Ethers v5 (stable) -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
+
   <style>
     :root{
-      --bg:#0b0f17;
-      --panel:#121829;
-      --text:#e7eefb;
-      --muted:#9aa8c7;
-      --accent:#7c5cff;
-      --accent-2:#00e5a0;
-      --danger:#ff5c7a;
-      --ok:#1ad1a5;
-      --chip:#1b2235;
+      --bg: #0e1218;
+      --card: #151b23;
+      --accent: #6ee7b7;
+      --accent2: #60a5fa;
+      --muted: #9aa4b2;
+      --text: #e6edf3;
+      --danger:#f43f5e;
+      --success:#22c55e;
+      --ring: rgba(110,231,183,0.3);
     }
-    *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    a{color:var(--accent)} .muted{color:var(--muted)}
-
-    .wrap{max-width:1050px;margin:28px auto;padding:0 20px}
-    .row{display:flex;gap:22px;flex-wrap:wrap}
-    .panel{background:var(--panel);border-radius:14px;padding:18px 20px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
-    .panel-lg{flex:1 1 620px;min-width:320px}
-    .panel-sm{flex:1 1 380px;min-width:320px}
-
-    .topbar{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-    .brand{font-size:22px;font-weight:700}
-    .sub{font-size:13px;margin-top:-6px;color:var(--muted)}
-
-    .rightbar{display:flex;gap:12px;margin-left:auto;align-items:center}
-    .chip{background:var(--chip);border-radius:999px;padding:8px 12px;font-size:13px;color:var(--muted)}
-    .chip b{color:var(--text)}
-
-    .btn{appearance:none;border:none;border-radius:10px;padding:12px 18px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;transition:transform .04s ease,opacity .2s}
-    .btn:hover{transform:translateY(-1px)} .btn:disabled{opacity:.5;cursor:not-allowed}
-    .btn-line{background:transparent;border:1px solid var(--accent);color:var(--text)}
-
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-    .item{background:var(--chip);border-radius:10px;padding:10px 12px;font-size:14px;display:flex;align-items:center;gap:10px}
-    .item .title{color:var(--muted)} .item .val{margin-left:auto;color:#fff;font-weight:700}
-
-    .alert{background:#2b1520;border:1px solid #4e2030;color:#ffd7de;padding:12px 14px;border-radius:10px}
-    .note{font-size:12px;margin-top:8px;color:var(--muted)}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
+      color:var(--text);
+      background: var(--bg) no-repeat center/cover fixed;
+      position:relative;
+    }
+    /* Background image — put your file at assets/bg.jpg */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      background:url("assets/bg.jpg") center/cover no-repeat;
+      opacity:.22; pointer-events:none;
+      filter:saturate(1.1) contrast(1.05);
+    }
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .brand{display:flex;flex-direction:column;gap:2px}
+    .brand h1{
+      font-family:'Poppins',sans-serif;
+      font-weight:700; letter-spacing:.4px;
+      margin:0; font-size:28px;
+      background: linear-gradient(90deg,var(--accent2),var(--accent));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .brand small{color:var(--muted);margin-top:-2px;font-size:13.5px;letter-spacing:.2px}
+    .actions{display:flex;gap:10px;align-items:center}
+    button{
+      appearance:none; border:0; outline:0;
+      background:var(--card); color:var(--text);
+      padding:10px 14px; border-radius:9px;
+      font-weight:600; letter-spacing:.2px;
+      box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;
+      cursor:pointer;
+      transition:transform .05s ease, box-shadow .2s ease, background .2s ease;
+    }
+    button:hover{box-shadow:0 0 0 1px rgba(255,255,255,.18) inset}
+    .btn-primary{
+      background:linear-gradient(90deg,var(--accent2),var(--accent));
+      color:#0b1322; box-shadow:0 0 0 2px var(--ring);
+    }
+    .card{
+      background:rgba(13,17,23,.78); backdrop-filter:blur(8px);
+      border-radius:14px; padding:18px;
+      box-shadow:0 0 0 1px rgba(255,255,255,.06) inset, 0 10px 28px rgba(0,0,0,.35);
+      margin-bottom:18px;
+    }
+    .card h3{margin:0 0 10px 0;font-size:18px;letter-spacing:.3px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .field{
+      flex:1 1 220px;
+      background:var(--card);
+      padding:10px 12px;border-radius:10px;
+      box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;
+      color:var(--text)
+    }
+    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input{
+      width:100%; background:transparent;color:var(--text);
+      border:0; outline:0; font-size:14px;
+    }
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    .muted{color:var(--muted)}
+    .notice{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.08)}
+    .success{color:var(--success)}
+    .danger{color:var(--danger)}
+    .flex{display:flex;gap:14px;flex-wrap:wrap}
+    .qr{width:150px;height:150px;border-radius:10px;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset}
+    video{width:100%;border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.35)}
+    .footer{margin-top:6px;color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
-  <div class="wrap">
-
-    <!-- top -->
-    <div class="topbar">
-      <div class="brand">PassTheBall</div>
-      <div class="sub">NFT Giveaway</div>
-
-      <div class="rightbar">
-        <div class="chip">Network: <b id="net">—</b></div>
-        <div class="chip">0x<b id="short">—</b></div>
-        <div class="chip">Balance: <b id="bal">—</b></div>
-        <button id="btn-connect" class="btn btn-line">Connect Wallet</button>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <h1>#PassTheBall</h1>
+        <small>Spread the Joy</small>
       </div>
-    </div>
+      <div class="actions">
+        <button id="btnConnect" class="btn-primary">Connect Wallet</button>
+        <button id="btnDisconnect" title="Disconnect from this page">Disconnect</button>
+      </div>
+    </header>
 
-    <div class="row">
-      <!-- left: claim -->
-      <div class="panel panel-lg">
-        <h2 style="margin:0 0 12px">Claim your PassTheBall NFT</h2>
+    <!-- Mission -->
+    <section class="card">
+      <p style="margin:0;max-width:900px">
+        We are <strong>#PassTheBall</strong> – a fundraising campaign for <em>Laureus Sport for Good</em>.
+        Our goal is to help children make friends, build community and self-confidence through sports.
+        Ready to <strong>#PassTheBall</strong>?
+      </p>
+    </section>
 
-        <div class="grid" style="margin-bottom:12px">
-          <div class="item">
-            <span class="title">Token</span>
-            <span class="val">ERC-1155</span>
-            <span class="chip">#<b id="tokenId">2</b></span>
+    <!-- Claim / Join section -->
+    <section class="card">
+      <h3>Join the #PassTheBall Club</h3>
+      <p class="muted" style="margin-top:0;margin-bottom:10px">
+        Connect your wallet and claim your ERC-1155 PassTheBall NFT on Polygon (PoS).  
+        After you join, you’ll get a <strong>transaction hash (txHash)</strong>—that’s the only info we show publicly.
+      </p>
+
+      <div class="row" style="margin-bottom:10px">
+        <div class="field">
+          <label>Token (ERC-1155)</label>
+          <div class="mono">ID: <span id="tokenIdDisplay">2</span></div>
+        </div>
+        <div class="field">
+          <label>Amount</label>
+          <input id="amountInput" type="number" value="1" min="1" step="1">
+        </div>
+      </div>
+
+      <div class="row" style="align-items:center">
+        <button id="btnClaim" class="btn-primary">🎁 Claim NFT</button>
+        <div id="txBox" class="notice mono" style="display:none"></div>
+      </div>
+    </section>
+
+    <!-- Donations + Video -->
+    <section class="card">
+      <h3>Support the Cause</h3>
+      <div class="flex">
+        <!-- ETH -->
+        <div class="field" style="flex:1 1 280px">
+          <label>Donate ETH</label>
+          <img class="qr" alt="ETH QR"
+               src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=0xd7F335AB52B6B3FC920fdD3c835F65484966288E">
+          <div class="flex" style="gap:8px;align-items:center;margin-top:6px">
+            <div id="ethAddr" class="mono" style="font-size:13px;word-break:break-all">
+              0xd7F335AB52B6B3FC920fdD3c835F65484966288E
+            </div>
+            <button onclick="copyText('ethAddr')">Copy</button>
           </div>
-          <div class="item">
-            <span class="title">Amount</span>
-            <span class="val"><input id="amount" value="1" min="1" max="5" type="number" style="width:62px;border:none;background:transparent;color:#fff;font-weight:700;text-align:center"></span>
+        </div>
+
+        <!-- BTC -->
+        <div class="field" style="flex:1 1 280px">
+          <label>Donate BTC</label>
+          <img class="qr" alt="BTC QR"
+               src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=bc1qa4snkstnnl79h783thqf8yts6ng9rkvphnrgsr">
+          <div class="flex" style="gap:8px;align-items:center;margin-top:6px">
+            <div id="btcAddr" class="mono" style="font-size:13px;word-break:break-all">
+              bc1qa4snkstnnl79h783thqf8yts6ng9rkvphnrgsr
+            </div>
+            <button onclick="copyText('btcAddr')">Copy</button>
           </div>
         </div>
 
-        <button id="btn-claim" class="btn">🎁 Claim NFT</button>
-
-        <div id="status" class="alert" style="display:none;margin-top:12px"></div>
-        <div class="note">Requires Polygon (PoS) and a small amount of POL for the admin wallet (gas is paid server-side).</div>
+        <!-- Video -->
+        <div class="field" style="flex:2 1 420px">
+          <label>Our Message</label>
+          <video id="msgVideo" controls preload="metadata" poster="assets/bg.jpg">
+            <source src="assets/video_message.mp4" type="video/mp4">
+            Sorry—your browser doesn’t support HTML5 video.
+          </video>
+        </div>
       </div>
+    </section>
 
-      <!-- right: wallet -->
-      <div class="panel panel-sm">
-        <h2 style="margin:0 0 12px">Your Wallet</h2>
-
-        <div class="item">
-          <span class="title">Address</span>
-          <span class="val" id="addr">—</span>
-        </div>
-        <div class="item" style="margin-top:10px">
-          <span class="title">Chain</span>
-          <span class="val" id="chain">—</span>
-        </div>
-        <div class="item" style="margin-top:10px">
-          <span class="title">Native</span>
-          <span class="val" id="native">—</span>
-        </div>
-
-        <div class="note" style="margin-top:12px">If you change accounts or networks in your wallet, this page will update automatically.</div>
-      </div>
-    </div>
+    <div class="footer">Built with ♥ for Laureus Sport for Good.</div>
   </div>
 
-  <!-- Ethers v5 UMD (global window.ethers) -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-
-  <!-- App -->
   <script>
-    const $ = sel => document.querySelector(sel);
-    const statusBox = $('#status');
+  (function () {
+    const $ = id => document.getElementById(id);
 
-    function setStatus(msg, isError = true) {
-      statusBox.textContent = msg;
-      statusBox.style.display = 'block';
-      statusBox.style.background = isError ? '#2b1520' : '#0f2b26';
-      statusBox.style.borderColor = isError ? '#4e2030' : '#1a6a57';
-      statusBox.style.color = isError ? '#ffd7de' : '#B7FFEB';
+    // -------- Settings ----------
+    const tokenId = 2; // your ERC-1155 token id
+    $('tokenIdDisplay').textContent = tokenId;
+
+    // Netlify function path:
+    const TRANSFER_URL =
+      (window.NETLIFY_FUNCTION_URL
+        ? window.NETLIFY_FUNCTION_URL + '/transfer1155'
+        : '/.netlify/functions/transfer1155');
+
+    // UI helpers
+    function toast(el, msg, type){
+      el.style.display='block';
+      el.className = 'notice mono';
+      if(type==='success') el.style.borderColor='rgba(34,197,94,.5)';
+      if(type==='danger') el.style.borderColor='rgba(244,63,94,.5)';
+      el.textContent = msg;
     }
+    function copyText(id){
+      navigator.clipboard.writeText($(id).textContent.trim())
+        .then(()=> alert('Copied ✔'));
+    }
+    window.copyText = copyText;
 
-    function shortAddr(a) { return a ? `${a.slice(0,6)}…${a.slice(-4)}` : '—'; }
+    // Wallet connection
+    let provider, signer, user;
 
-    let provider, signer, account;
-
-    async function connect() {
-      try {
-        if (!window.ethereum) return setStatus('No wallet found. Install MetaMask.', true);
-        if (!window.ethers) return setStatus('Ethers library did not load.', true);
-
-        provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
-        await provider.send('eth_requestAccounts', []);
-        signer = provider.getSigner();
-        account = await signer.getAddress();
-
-        const network = await provider.getNetwork();
-        const bal = await provider.getBalance(account);
-
-        $('#addr').textContent   = account;
-        $('#short').textContent  = account ? account.slice(2, 6) : '—';
-        $('#net').textContent    = network?.name ?? '—';
-        $('#chain').textContent  = `chainId ${network?.chainId ?? '—'}`;
-        $('#bal').textContent    = `${ethers.utils.formatEther(bal).slice(0,6)} POL`;
-        $('#native').textContent = `${ethers.utils.formatEther(bal).slice(0,6)} POL`;
-
-        setStatus('Wallet connected.', false);
-      } catch (err) {
-        setStatus(`Connection rejected. ${err?.message || err}`, true);
+    function ensureMetaMask(){
+      if(!window.ethereum){
+        alert('Please install MetaMask or a compatible wallet.');
+        return false;
       }
+      return true;
     }
 
-    // POST to Netlify function
-    async function claim() {
-      try {
-        if (!signer || !account) return setStatus('Connect wallet first.', true);
+    async function connect(){
+      if(!ensureMetaMask()) return;
+      provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
+      await provider.send('eth_requestAccounts', []);
+      signer = provider.getSigner();
+      user = await signer.getAddress();
 
-        const body = {
-          to: account,
-          amount: Number($('#amount').value || 1)
-        };
+      // force Polygon mainnet (chainId 137)
+      const net = await provider.getNetwork();
+      if(net.chainId !== 137){
+        try{
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x89' }]
+          });
+        }catch(e){
+          alert('Please switch to Polygon (chainId 137) in your wallet.');
+        }
+      }
 
-        setStatus('Submitting claim…', false);
+      $('btnConnect').textContent = 'Connected';
+      $('btnConnect').disabled = true;
+    }
 
-        const res = await fetch('/.netlify/functions/transfer1155', {
+    function disconnect(){
+      provider = signer = user = null;
+      $('btnConnect').textContent = 'Connect Wallet';
+      $('btnConnect').disabled = false;
+      toast($('txBox'), 'Disconnected (local only).', 'success');
+    }
+
+    $('btnConnect').addEventListener('click', connect);
+    $('btnDisconnect').addEventListener('click', disconnect);
+
+    // Claim / Mint – show only txHash to user
+    $('btnClaim').addEventListener('click', async () => {
+      const out = $('txBox');
+      out.style.display='none';
+
+      if(!signer || !user){
+        toast(out, 'Please connect your wallet first.', 'danger'); return;
+      }
+      const net = await provider.getNetwork();
+      if(net.chainId !== 137){
+        toast(out, 'Wrong network – please switch to Polygon (PoS).', 'danger'); return;
+      }
+
+      const amount = Math.max(1, parseInt($('amountInput').value || '1', 10));
+
+      try{
+        const res = await fetch(TRANSFER_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
+          body: JSON.stringify({ to: user, tokenId, amount })
         });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error || data?.message || 'Request failed');
+        const data = await res.json().catch(()=> ({}));
 
-        // ‘submitted’ means we broadcasted; final inclusion will appear on Polygonscan
-        setStatus(`🎉 ${data.status}. Tx: ${data.txHash || '—'}`, false);
-      } catch (err) {
-        setStatus(`Claim failed. ${err?.message || err}`, true);
+        if(!res.ok){
+          throw new Error(data && data.error ? data.error : ('HTTP ' + res.status));
+        }
+
+        if(data.txHash){
+          toast(out, `txHash: ${data.txHash}`, 'success');
+        }else{
+          toast(out, (data.message || 'Submitted.'), 'success');
+        }
+      }catch(e){
+        console.error(e);
+        toast(out, 'Error: ' + (e.message || e), 'danger');
       }
-    }
+    });
 
-    // UI buttons
-    $('#btn-connect').addEventListener('click', connect);
-    $('#btn-claim').addEventListener('click', claim);
-
-    // auto-refresh on chain/account change
-    if (window.ethereum) {
-      ethereum.on('accountsChanged', () => connect().catch(()=>{}));
-      ethereum.on('chainChanged', () => connect().catch(()=>{}));
-    }
+  })();
   </script>
 </body>
 </html>
