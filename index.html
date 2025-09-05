@@ -2,305 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
-  <title>PassTheBall – Claim</title>
-  <meta name="description" content="Claim your PassTheBall NFT" />
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PassTheBall NFT Giveaway</title>
   <style>
-    :root{
-      --bg:#0f1220; --card:#171a2b; --muted:#8d93b5; --text:#e9ecff; --accent:#7e9cff; --ok:#36d399; --bad:#ff6b6b;
-      --b:#242947;
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f1220;
+      color: #e9ecff;
+      margin: 0;
+      padding: 2rem;
+      text-align: center;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--text); background: radial-gradient(1200px 1200px at 110% -10%, #2a2f57 0%, transparent 60%) , var(--bg);
-      display:flex; align-items:center; justify-content:center; padding:24px;
+    h1 { margin-bottom: 1rem; }
+    button {
+      background: #4f46e5;
+      border: none;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 8px;
     }
-    .app{width:100%; max-width:920px}
-    .top{
-      display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px;
+    button:disabled { background: #555; cursor: not-allowed; }
+    #status {
+      margin-top: 1rem;
+      font-weight: bold;
     }
-    .brand{display:flex; gap:10px; align-items:center}
-    .brand img{width:40px; height:40px; border-radius:10px; box-shadow:0 10px 25px rgba(0,0,0,.25)}
-    .brand b{font-size:18px}
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,0)) , var(--card);
-      border:1px solid var(--b);
-      border-radius:18px; padding:20px;
-      box-shadow:0 30px 60px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.03);
-    }
-    .wallet-bar{
-      display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap;
-    }
-    button{
-      appearance:none; border:none; background:var(--b); color:var(--text);
-      padding:10px 14px; border-radius:11px; cursor:pointer; transition:.18s ease; font-weight:600;
-    }
-    button:hover{transform:translateY(-1px); filter:brightness(1.05)}
-    button.primary{background:linear-gradient(180deg, #8aa1ff, #6b87ff)}
-    button.ghost{background:transparent; border:1px solid var(--b)}
-    .pill{background:#11152a; border:1px solid var(--b); padding:6px 10px; border-radius:10px; font:600 13px/1 ui-sans-serif; color:var(--muted)}
-    .grid{display:grid; grid-template-columns: 1.25fr 1fr; gap:18px}
-    @media (max-width:860px){ .grid{grid-template-columns:1fr; } .wallet-bar{justify-content:flex-start} }
-    .h1{font-size:22px; margin:0 0 16px}
-    .muted{color:var(--muted)}
-    .row{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
-    .stat{display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:#121633; border:1px solid var(--b)}
-    .stat b{font-size:14px}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
-    .big{font-size:28px; font-weight:800}
-    .divider{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent); margin:16px 0}
-    .status{margin-top:10px; padding:10px 12px; border-radius:10px; font-size:14px; border:1px solid var(--b); background:#11142a}
-    .status.ok{border-color:#2a5142; background:#0e2a1f}
-    .status.bad{border-color:#5a2b2b; background:#2a1111}
-    .link{color:var(--accent); text-decoration:none}
-    .link:hover{text-decoration:underline}
-    .footnote{font-size:12px; color:var(--muted); margin-top:12px}
-    .spinner{width:16px;height:16px;border-radius:50%;border:2px solid #ffffff44;border-top-color:#fff; animation:spin .8s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    a { color: #7e9cff; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 </head>
 <body>
-  <div class="app">
-    <div class="top">
-      <div class="brand">
-        <img src="https://assets-global.website-files.com/64b7d8d71f6d17eb36b1f9b9/64b7d9cde76d989a1a77a1f4_ball.png" alt="logo" />
-        <div>
-          <b>PassTheBall</b><br>
-          <span class="muted">NFT Giveaway</span>
-        </div>
-      </div>
-      <div class="wallet-bar card">
-        <span id="net" class="pill">Network: —</span>
-        <span id="addr" class="pill mono">0x…</span>
-        <span id="bal" class="pill">Balance: —</span>
-        <button id="btnConnect" class="primary">Connect Wallet</button>
-        <button id="btnDisconnect" class="ghost" style="display:none">Disconnect</button>
-      </div>
-    </div>
+  <h1>🎉 Claim Your PassTheBall NFT</h1>
+  <p>Connect your wallet on Polygon to receive your free NFT.</p>
 
-    <div class="grid">
-      <div class="card">
-        <h2 class="h1">Claim your PassTheBall NFT</h2>
-        <div class="row" style="margin-bottom:10px">
-          <div class="stat"><span>🪪</span><b>Token</b> <span class="pill mono" id="tokenId">ERC-1155 #2</span></div>
-          <div class="stat"><span>📦</span><b>Amount</b> <span class="pill mono" id="tokenAmt">1</span></div>
-        </div>
-        <div class="divider"></div>
-        <div class="row">
-          <button id="btnClaim" class="primary" disabled>🎁 Claim NFT</button>
-          <div id="busy" class="row" style="display:none;"><div class="spinner"></div><span class="muted">Processing…</span></div>
-        </div>
-        <div id="msg" class="status" style="display:none"></div>
-        <div class="footnote">
-          Requires Polygon (PoS) and a small amount of POL for the admin wallet (gas is paid server-side).
-        </div>
-      </div>
+  <button id="connect-btn">🔗 Connect Wallet</button>
+  <button id="claim-btn" disabled>🎁 Claim NFT</button>
 
-      <div class="card">
-        <h2 class="h1">Your Wallet</h2>
-        <div class="row" style="margin-bottom:10px">
-          <div class="stat"><span>👛</span><b>Address</b> <span class="mono" id="addrFull">—</span></div>
-        </div>
-        <div class="row" style="margin-bottom:10px">
-          <div class="stat"><span>⛓️</span><b>Chain</b> <span id="chain" class="pill mono">—</span></div>
-          <div class="stat"><span>💰</span><b>Native</b> <span id="native" class="pill mono">—</span></div>
-        </div>
-        <div class="divider"></div>
-        <p class="muted" style="margin-top:8px">
-          If you change accounts or networks in your wallet, this page will update automatically.
-        </p>
-      </div>
-    </div>
-  </div>
+  <div id="status">Not connected</div>
 
   <script>
-    /***********************
-     * Configuration
-     ***********************/
-    const FN_URL = "https://passtheball.io/.netlify/functions/transfer1155"; // <-- your Netlify function on custom domain
-    const CHAIN_NAME = {
-      "0x89":"Polygon Mainnet",
-      "0xa":"OP Mainnet",
-      "0x13881":"Polygon Mumbai (old testnet)",
-      "0xaa36a7":"Sepolia (testnet)"
-    };
+    // ✅ Use your custom domain function endpoint
+    const FN_URL = "https://passtheball.io/.netlify/functions/transfer1155";
 
-    /***********************
-     * UI helpers
-     ***********************/
-    const $ = (id) => document.getElementById(id);
-    const btnConnect = $("btnConnect");
-    const btnDisconnect = $("btnDisconnect");
-    const btnClaim = $("btnClaim");
-    const msg = $("msg");
-    const busy = $("busy");
-    const addr = $("addr");
-    const addrFull = $("addrFull");
-    const bal = $("bal");
-    const net = $("net");
-    const chainSpan = $("chain");
-    const nativeSpan = $("native");
+    const connectBtn = document.getElementById("connect-btn");
+    const claimBtn = document.getElementById("claim-btn");
+    const statusDiv = document.getElementById("status");
 
-    function shorten(a){ return a ? (a.slice(0,6)+"…"+a.slice(-4)) : "0x…"; }
-    function show(el, yes=true){ el.style.display = yes ? "" : "none"; }
-    function toast(type, text, extra=""){
-      msg.className = "status " + (type==="ok" ? "ok" : type==="bad" ? "bad" : "");
-      msg.innerHTML = text + (extra ? `<div class="footnote">${extra}</div>` : "");
-      show(msg, true);
-    }
-    function clearToast(){ show(msg, false); }
+    let provider, signer, account;
 
-    /***********************
-     * Wallet state
-     ***********************/
-    let provider, signer, account, chainIdHex;
-
-    async function refreshWalletUI(){
-      if(!window.ethereum){
-        addr.textContent = "No wallet";
-        addrFull.textContent = "Install MetaMask";
-        net.textContent = "Network: —";
-        bal.textContent = "Balance: —";
-        chainSpan.textContent = "—";
-        nativeSpan.textContent = "—";
-        btnClaim.disabled = true;
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("MetaMask not found. Please install it.");
         return;
       }
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = provider.getSigner();
+      account = await signer.getAddress();
+      statusDiv.textContent = `Connected: ${account}`;
+      claimBtn.disabled = false;
+    }
 
-      provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-      const accts = await provider.listAccounts();
-      const network = await provider.getNetwork();
-      chainIdHex = "0x" + network.chainId.toString(16);
-      net.textContent = "Network: " + (CHAIN_NAME[chainIdHex] || ("chainId " + chainIdHex));
-      chainSpan.textContent = CHAIN_NAME[chainIdHex] || chainIdHex;
-
-      if(accts.length){
-        signer = provider.getSigner();
-        account = accts[0];
-        addr.textContent = shorten(account);
-        addrFull.textContent = account;
-
-        // Native balance (POL on Polygon)
-        try{
-          const wei = await provider.getBalance(account);
-          const eth = Number(ethers.utils.formatEther(wei));
-          nativeSpan.textContent = eth.toFixed(4);
-          bal.textContent = "Balance: " + eth.toFixed(4);
-        }catch(e){
-          nativeSpan.textContent = "—";
-          bal.textContent = "Balance: —";
-        }
-
-        btnConnect.style.display = "none";
-        btnDisconnect.style.display = "";
-        btnClaim.disabled = false;
-      }else{
-        account = null;
-        addr.textContent = "0x…";
-        addrFull.textContent = "—";
-        nativeSpan.textContent = "—";
-        bal.textContent = "Balance: —";
-        btnConnect.style.display = "";
-        btnDisconnect.style.display = "none";
-        btnClaim.disabled = true;
+    async function claimNFT() {
+      if (!account) {
+        alert("Connect your wallet first.");
+        return;
       }
-    }
-
-    async function connect(){
-      try{
-        if(!window.ethereum){
-          toast("bad","No wallet detected. Please install MetaMask.");
-          return;
-        }
-        await window.ethereum.request({method:"eth_requestAccounts"});
-        await refreshWalletUI();
-        clearToast();
-      }catch(e){
-        toast("bad","Connection rejected.", e.message);
-      }
-    }
-
-    async function disconnect(){
-      // For user wallets (MetaMask) there's no programmatic disconnect; we just reset UI.
-      account = null;
-      await refreshWalletUI();
-      toast("","Disconnected.");
-    }
-
-    /***********************
-     * Claim: call Netlify Function
-     ***********************/
-    // Fetch with timeout helper
-    function fetchWithTimeout(url, opts={}, ms=25000){
-      return new Promise((resolve, reject)=>{
-        const ctl = new AbortController();
-        const id = setTimeout(()=>{ ctl.abort(); reject(new Error("Request timeout")); }, ms);
-        fetch(url, {...opts, signal: ctl.signal})
-          .then(r => (clearTimeout(id), resolve(r)))
-          .catch(err => (clearTimeout(id), reject(err)));
-      });
-    }
-
-    async function claim(){
-      clearToast();
-      if(!account){ toast("bad","Connect your wallet first."); return; }
-      show(busy, true);
-      btnClaim.disabled = true;
-
-      try{
-        const res = await fetchWithTimeout(FN_URL, {
-          method:"POST",
-          headers: {"Content-Type":"application/json"},
+      statusDiv.textContent = "⏳ Claiming...";
+      try {
+        const resp = await fetch(FN_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ to: account })
-        }, 30000);
-
-        let data;
-        try { data = await res.json(); } catch (e) {
-          throw new Error("Invalid response from server");
-        }
-
-        if(!res.ok){
-          const m = data?.error || data?.message || "Request failed";
-          throw new Error(m);
-        }
-
-        // Success path: show tx hash (may be 'submitted' if using broadcast)
-        let note = "";
-        if(data.txHash){
+        });
+        const data = await resp.json();
+        if (data.status === "submitted" && data.txHash) {
           const link = `https://polygonscan.com/tx/${data.txHash}`;
-          note = `Tx Hash: <a class="link" target="_blank" href="${link}">${data.txHash}</a>`;
+          statusDiv.innerHTML = `🎁 NFT claim submitted! <br><a href="${link}" target="_blank">View on Polygonscan</a>`;
+        } else if (data.status === "already") {
+          statusDiv.textContent = "ℹ️ You already claimed this NFT.";
+        } else if (data.status === "none_available") {
+          statusDiv.textContent = "😕 Sorry, no NFTs left to claim.";
+        } else if (data.error) {
+          statusDiv.textContent = "❌ Error: " + data.error;
+        } else {
+          statusDiv.textContent = "⚠️ Unexpected response.";
         }
-        toast("ok", data.message || "Submitted!", note);
-      }catch(err){
-        const tip = (String(err).includes("timeout"))
-          ? "The server is busy. Please check your wallet later, or try again in a few seconds."
-          : "Please try again.";
-        toast("bad", "Claim failed: " + (err.message || err), tip);
-      }finally{
-        show(busy, false);
-        btnClaim.disabled = !account;
+      } catch (e) {
+        statusDiv.textContent = "❌ Claim failed: " + (e.message || e);
       }
     }
 
-    /***********************
-     * Wire up & events
-     ***********************/
-    btnConnect.onclick = connect;
-    btnDisconnect.onclick = disconnect;
-    btnClaim.onclick = claim;
-
-    if(window.ethereum){
-      window.ethereum.on('accountsChanged', refreshWalletUI);
-      window.ethereum.on('chainChanged', ()=>document.location.reload());
-    }
-    refreshWalletUI();
+    connectBtn.addEventListener("click", connectWallet);
+    claimBtn.addEventListener("click", claimNFT);
   </script>
 </body>
 </html>
