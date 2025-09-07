@@ -1,104 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>#PassTheBall – Spread the Joy</title>
-
-  <!-- Fonts -->
+  <title>#PassTheBall — Spread the Joy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Ethers v5 (stable) -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
-    :root{
-      --bg: #0e1218;
-      --card: #151b23;
-      --accent: #6ee7b7;
-      --accent2: #60a5fa;
-      --muted: #9aa4b2;
-      --text: #e6edf3;
-      --danger:#f43f5e;
-      --success:#22c55e;
-      --ring: rgba(110,231,183,0.3);
+    :root {
+      --text:#e7eef7;
+      --muted:#b5c0cf;
+      --accent:#86efac;
+      --accent2:#60a5fa;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
+    html,body{margin:0;padding:0;height:100%;}
+    body {
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
       color:var(--text);
-      background: var(--bg) no-repeat center/cover fixed;
-      position:relative;
+      background: url("./assets/bg.jpg") center/cover fixed no-repeat #0b1117;
     }
-    /* Background image — put your file at assets/bg.jpg */
-    body::before{
-      content:"";
-      position:fixed; inset:0;
-      background:url("assets/bg.jpg") center/cover no-repeat;
-      opacity:.22; pointer-events:none;
-      filter:saturate(1.1) contrast(1.05);
+    body:before {
+      content:""; position:fixed; inset:0;
+      background:rgba(0,0,0,0.35); z-index:-1;
     }
-    .container{max-width:1100px;margin:0 auto;padding:24px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
-    .brand{display:flex;flex-direction:column;gap:2px}
-    .brand h1{
-      font-family:'Poppins',sans-serif;
-      font-weight:700; letter-spacing:.4px;
-      margin:0; font-size:28px;
-      background: linear-gradient(90deg,var(--accent2),var(--accent));
-      -webkit-background-clip:text;background-clip:text;color:transparent;
-    }
-    .brand small{color:var(--muted);margin-top:-2px;font-size:13.5px;letter-spacing:.2px}
-    .actions{display:flex;gap:10px;align-items:center}
-    button{
-      appearance:none; border:0; outline:0;
-      background:var(--card); color:var(--text);
-      padding:10px 14px; border-radius:9px;
-      font-weight:600; letter-spacing:.2px;
-      box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;
-      cursor:pointer;
-      transition:transform .05s ease, box-shadow .2s ease, background .2s ease;
-    }
-    button:hover{box-shadow:0 0 0 1px rgba(255,255,255,.18) inset}
-    .btn-primary{
-      background:linear-gradient(90deg,var(--accent2),var(--accent));
-      color:#0b1322; box-shadow:0 0 0 2px var(--ring);
-    }
-    .card{
-      background:rgba(13,17,23,.78); backdrop-filter:blur(8px);
-      border-radius:14px; padding:18px;
-      box-shadow:0 0 0 1px rgba(255,255,255,.06) inset, 0 10px 28px rgba(0,0,0,.35);
-      margin-bottom:18px;
-    }
-    .card h3{margin:0 0 10px 0;font-size:18px;letter-spacing:.3px}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .field{
-      flex:1 1 220px;
-      background:var(--card);
-      padding:10px 12px;border-radius:10px;
-      box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;
-      color:var(--text)
-    }
-    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input{
-      width:100%; background:transparent;color:var(--text);
-      border:0; outline:0; font-size:14px;
-    }
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
-    .muted{color:var(--muted)}
-    .notice{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.08)}
-    .success{color:var(--success)}
-    .danger{color:var(--danger)}
-    .flex{display:flex;gap:14px;flex-wrap:wrap}
-    .qr{width:150px;height:150px;border-radius:10px;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset}
-    video{width:100%;border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.35)}
-    .footer{margin-top:6px;color:var(--muted);font-size:13px}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .brand h1{margin:0;font-family:Poppins;font-weight:700;color:var(--accent);font-size:34px}
+    .brand small{color:var(--muted);font-size:14px}
+    .actions{display:flex;gap:10px}
+    .btn{border:0;border-radius:12px;padding:10px 16px;font-weight:600;cursor:pointer}
+    .btn.primary{background:var(--accent2);color:#091318}
+    .btn.secondary{background:transparent;color:var(--text);border:1px solid #334155}
+    .hero{background:rgba(21,27,35,0.85);padding:22px;border-radius:18px;margin-bottom:18px}
+    .hero h2{margin:0 0 12px;font-family:Poppins;font-weight:700}
+    .note{color:var(--muted);font-size:14px}
+    .txbox{display:none;margin-top:12px;padding:12px;border-radius:12px;background:#12202b;border:1px solid #1f3341;font-family:monospace}
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:30px}
+    .card{background:rgba(21,27,35,0.85);padding:18px;border-radius:14px}
+    .card h3{margin:0 0 10px;font-family:Poppins}
+    .qr{width:160px;height:160px;display:block;margin-bottom:10px}
+    .addr{word-break:break-all;font-family:monospace;font-size:13px;color:#cbd5e1;margin-bottom:8px}
+    .copybtn{border:0;border-radius:10px;padding:6px 10px;font-weight:600;background:var(--accent);color:#091318;cursor:pointer}
+    video{width:100%;border-radius:12px}
+    footer{margin-top:20px;color:#8ea0b8;font-size:13px;text-align:center}
+    @media(max-width:1000px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrap">
     <!-- Header -->
     <header>
       <div class="brand">
@@ -106,202 +56,102 @@
         <small>Spread the Joy</small>
       </div>
       <div class="actions">
-        <button id="btnConnect" class="btn-primary">Connect Wallet</button>
-        <button id="btnDisconnect" title="Disconnect from this page">Disconnect</button>
+        <button id="connectBtn" class="btn primary">Connect Wallet</button>
+        <button id="disconnectBtn" class="btn secondary" style="display:none">Disconnect</button>
       </div>
     </header>
 
-    <!-- Mission -->
-    <section class="card">
-      <p style="margin:0;max-width:900px">
-        We are <strong>#PassTheBall</strong> – a fundraising campaign for <em>Laureus Sport for Good</em>.
-        Our goal is to help children make friends, build community and self-confidence through sports.
-        Ready to <strong>#PassTheBall</strong>?
+    <!-- Hero -->
+    <div class="hero">
+      <h2>Join the #PassTheBall Club</h2>
+      <p>
+        We are <strong>#PassTheBall</strong> — a fundraising campaign for <em>Laureus Sport for Good</em>.  
+        Through sports, children make friends, build community, and gain self-confidence.  
+        Connect your wallet to join the club — you’ll automatically receive the NFT and see your transaction hash.
       </p>
-    </section>
-
-    <!-- Claim / Join section -->
-    <section class="card">
-      <h3>Join the #PassTheBall Club</h3>
-      <p class="muted" style="margin-top:0;margin-bottom:10px">
-        Connect your wallet and claim your ERC-1155 PassTheBall NFT on Polygon (PoS).  
-        After you join, you’ll get a <strong>transaction hash (txHash)</strong>—that’s the only info we show publicly.
-      </p>
-
-      <div class="row" style="margin-bottom:10px">
-        <div class="field">
-          <label>Token (ERC-1155)</label>
-          <div class="mono">ID: <span id="tokenIdDisplay">2</span></div>
-        </div>
-        <div class="field">
-          <label>Amount</label>
-          <input id="amountInput" type="number" value="1" min="1" step="1">
-        </div>
-      </div>
-
-      <div class="row" style="align-items:center">
-        <button id="btnClaim" class="btn-primary">🎁 Claim NFT</button>
-        <div id="txBox" class="notice mono" style="display:none"></div>
-      </div>
-    </section>
+      <div id="statusLine" class="note">Connect your wallet on Polygon (PoS).</div>
+      <div id="txBox" class="txbox">Mint successful! Tx: <a id="txLink" href="#" target="_blank"></a></div>
+    </div>
 
     <!-- Donations + Video -->
-    <section class="card">
-      <h3>Support the Cause</h3>
-      <div class="flex">
-        <!-- ETH -->
-        <div class="field" style="flex:1 1 280px">
-          <label>Donate ETH</label>
-          <img class="qr" alt="ETH QR"
-               src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=0xd7F335AB52B6B3FC920fdD3c835F65484966288E">
-          <div class="flex" style="gap:8px;align-items:center;margin-top:6px">
-            <div id="ethAddr" class="mono" style="font-size:13px;word-break:break-all">
-              0xd7F335AB52B6B3FC920fdD3c835F65484966288E
-            </div>
-            <button onclick="copyText('ethAddr')">Copy</button>
-          </div>
-        </div>
-
-        <!-- BTC -->
-        <div class="field" style="flex:1 1 280px">
-          <label>Donate BTC</label>
-          <img class="qr" alt="BTC QR"
-               src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=bc1qa4snkstnnl79h783thqf8yts6ng9rkvphnrgsr">
-          <div class="flex" style="gap:8px;align-items:center;margin-top:6px">
-            <div id="btcAddr" class="mono" style="font-size:13px;word-break:break-all">
-              bc1qa4snkstnnl79h783thqf8yts6ng9rkvphnrgsr
-            </div>
-            <button onclick="copyText('btcAddr')">Copy</button>
-          </div>
-        </div>
-
-        <!-- Video -->
-        <div class="field" style="flex:2 1 420px">
-          <label>Our Message</label>
-          <video id="msgVideo" controls preload="metadata" poster="assets/bg.jpg">
-            <source src="assets/video_message.mp4" type="video/mp4">
-            Sorry—your browser doesn’t support HTML5 video.
-          </video>
-        </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Donate ETH</h3>
+        <img class="qr" src="./assets/eth_qr.png" alt="ETH QR">
+        <div class="addr" id="ethAddr">0xd7F335AB52B6B3FC920fdD3c835F65484966288E</div>
+        <button class="copybtn" onclick="copyText('ethAddr')">Copy</button>
       </div>
-    </section>
 
-    <div class="footer">Built with ♥ for Laureus Sport for Good.</div>
+      <div class="card">
+        <h3>Donate BTC</h3>
+        <img class="qr" src="./assets/btc_qr.png" alt="BTC QR">
+        <div class="addr" id="btcAddr">bc1qa4snkstnnl79h783thqf8yts6ng9rkvphnrgsr</div>
+        <button class="copybtn" onclick="copyText('btcAddr')">Copy</button>
+      </div>
+
+      <div class="card">
+        <h3>Our Message</h3>
+        <video controls preload="metadata" poster="./assets/bg.jpg">
+          <source src="./assets/video_message.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+
+    <footer>Built with ♥ for Laureus Sport for Good.</footer>
   </div>
 
   <script>
-  (function () {
-    const $ = id => document.getElementById(id);
+    const NETLIFY_FUNCTION_URL = '/.netlify/functions/transfer1155';
+    const TOKEN_ID = 2, AMOUNT = 1, POLYGON_CHAIN_ID = 137;
 
-    // -------- Settings ----------
-    const tokenId = 2; // your ERC-1155 token id
-    $('tokenIdDisplay').textContent = tokenId;
+    const connectBtn=document.getElementById('connectBtn');
+    const disconnectBtn=document.getElementById('disconnectBtn');
+    const statusLine=document.getElementById('statusLine');
+    const txBox=document.getElementById('txBox');
+    const txLink=document.getElementById('txLink');
 
-    // Netlify function path:
-    const TRANSFER_URL =
-      (window.NETLIFY_FUNCTION_URL
-        ? window.NETLIFY_FUNCTION_URL + '/transfer1155'
-        : '/.netlify/functions/transfer1155');
-
-    // UI helpers
-    function toast(el, msg, type){
-      el.style.display='block';
-      el.className = 'notice mono';
-      if(type==='success') el.style.borderColor='rgba(34,197,94,.5)';
-      if(type==='danger') el.style.borderColor='rgba(244,63,94,.5)';
-      el.textContent = msg;
-    }
+    function setStatus(t){statusLine.textContent=t}
     function copyText(id){
-      navigator.clipboard.writeText($(id).textContent.trim())
-        .then(()=> alert('Copied ✔'));
+      const txt=document.getElementById(id).textContent.trim();
+      navigator.clipboard.writeText(txt); alert("Copied: "+txt);
     }
-    window.copyText = copyText;
-
-    // Wallet connection
-    let provider, signer, user;
-
-    function ensureMetaMask(){
-      if(!window.ethereum){
-        alert('Please install MetaMask or a compatible wallet.');
-        return false;
-      }
-      return true;
+    function showTx(hash){
+      txLink.href="https://polygonscan.com/tx/"+hash;
+      txLink.textContent=hash;
+      txBox.style.display='block';
     }
 
     async function connect(){
-      if(!ensureMetaMask()) return;
-      provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
-      await provider.send('eth_requestAccounts', []);
-      signer = provider.getSigner();
-      user = await signer.getAddress();
-
-      // force Polygon mainnet (chainId 137)
-      const net = await provider.getNetwork();
-      if(net.chainId !== 137){
-        try{
-          await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x89' }]
-          });
-        }catch(e){
-          alert('Please switch to Polygon (chainId 137) in your wallet.');
-        }
-      }
-
-      $('btnConnect').textContent = 'Connected';
-      $('btnConnect').disabled = true;
-    }
-
-    function disconnect(){
-      provider = signer = user = null;
-      $('btnConnect').textContent = 'Connect Wallet';
-      $('btnConnect').disabled = false;
-      toast($('txBox'), 'Disconnected (local only).', 'success');
-    }
-
-    $('btnConnect').addEventListener('click', connect);
-    $('btnDisconnect').addEventListener('click', disconnect);
-
-    // Claim / Mint – show only txHash to user
-    $('btnClaim').addEventListener('click', async () => {
-      const out = $('txBox');
-      out.style.display='none';
-
-      if(!signer || !user){
-        toast(out, 'Please connect your wallet first.', 'danger'); return;
-      }
-      const net = await provider.getNetwork();
-      if(net.chainId !== 137){
-        toast(out, 'Wrong network – please switch to Polygon (PoS).', 'danger'); return;
-      }
-
-      const amount = Math.max(1, parseInt($('amountInput').value || '1', 10));
-
+      if(!window.ethereum){setStatus("Please install MetaMask.");return}
       try{
-        const res = await fetch(TRANSFER_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ to: user, tokenId, amount })
+        await window.ethereum.request({method:'eth_requestAccounts'});
+        const provider=new ethers.providers.Web3Provider(window.ethereum,'any');
+        const net=await provider.getNetwork();
+        if(net.chainId!==POLYGON_CHAIN_ID){
+          await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x89'}]});
+        }
+        const signer=provider.getSigner();
+        const acct=await signer.getAddress();
+        setStatus("Wallet connected: "+acct.substring(0,6)+"…"+acct.slice(-4));
+        connectBtn.style.display='none';disconnectBtn.style.display='inline-block';
+
+        // mint NFT
+        const res=await fetch(NETLIFY_FUNCTION_URL,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({to:acct,tokenId:TOKEN_ID,amount:AMOUNT})
         });
-
-        const data = await res.json().catch(()=> ({}));
-
-        if(!res.ok){
-          throw new Error(data && data.error ? data.error : ('HTTP ' + res.status));
-        }
-
-        if(data.txHash){
-          toast(out, `txHash: ${data.txHash}`, 'success');
-        }else{
-          toast(out, (data.message || 'Submitted.'), 'success');
-        }
-      }catch(e){
-        console.error(e);
-        toast(out, 'Error: ' + (e.message || e), 'danger');
-      }
-    });
-
-  })();
+        const data=await res.json();
+        if(res.ok&&data.txHash){showTx(data.txHash);setStatus("NFT minted successfully!")}
+        else{setStatus("Mint failed: "+(data.error||""))}
+      }catch(e){setStatus("Error: "+e.message)}
+    }
+    function disconnect(){
+      connectBtn.style.display='inline-block';disconnectBtn.style.display='none';
+      setStatus("Disconnected. Connect again to rejoin.");
+    }
+    connectBtn.addEventListener('click',connect);
+    disconnectBtn.addEventListener('click',disconnect);
   </script>
 </body>
 </html>
